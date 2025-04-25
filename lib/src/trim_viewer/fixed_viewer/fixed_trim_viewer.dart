@@ -5,12 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_trimmer/src/trim_viewer/trim_editor_painter.dart';
-import 'package:video_trimmer/src/trimmer.dart';
-import 'package:video_trimmer/src/utils/duration_style.dart';
+import 'package:video_trimmer/video_trimmer.dart';
 
 import '../../utils/editor_drag_type.dart';
-import '../trim_area_properties.dart';
-import '../trim_editor_properties.dart';
 import 'fixed_thumbnail_viewer.dart';
 
 class FixedTrimViewer extends StatefulWidget {

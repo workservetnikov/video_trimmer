@@ -1,18 +1,19 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit_config.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit_config.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/return_code.dart';
+import 'package:video_trimmer/src/utils/file_formats.dart';
+import 'package:video_trimmer/src/utils/storage_dir.dart';
 import 'package:path/path.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:video_trimmer/src/utils/file_formats.dart';
-import 'package:video_trimmer/src/utils/storage_dir.dart';
+import 'dart:developer';
 
-enum TrimmerEvent { initialized }
+enum TrimmerEvent { initialized, videoChanged }
 
 /// Helps in loading video from file, saving trimmed video to a file
 /// and gives video playback controls. Some of the helpful methods
@@ -39,12 +40,39 @@ class Trimmer {
   ///
   /// Returns the loaded video file.
   Future<void> loadVideo({required File videoFile}) async {
-    currentVideoFile = videoFile;
-    if (videoFile.existsSync()) {
-      _videoPlayerController = VideoPlayerController.file(currentVideoFile!);
-      await _videoPlayerController!.initialize().then((_) {
-        _controller.add(TrimmerEvent.initialized);
-      });
+    try {
+      log('Trimmer: Loading video');
+      // Dispose old controller if exists
+      if (_videoPlayerController != null) {
+        log('Trimmer: Disposing old controller');
+        await _videoPlayerController!.dispose();
+        _videoPlayerController = null;
+      }
+
+      currentVideoFile = videoFile;
+      if (videoFile.existsSync()) {
+        log('Trimmer: Video file exists');
+        _videoPlayerController = VideoPlayerController.file(currentVideoFile!);
+        await _videoPlayerController!.initialize();
+        log('Trimmer: Video initialized');
+
+        if (_videoPlayerController != null) {
+          _controller.add(TrimmerEvent.videoChanged);
+          log('Trimmer: Video changed event sent');
+        } else {
+          log('Trimmer: Controller was disposed during initialization');
+        }
+      } else {
+        log('Trimmer: Video file does not exist');
+        throw Exception('Video file does not exist');
+      }
+    } catch (e) {
+      log('Trimmer: Error loading video: $e');
+      if (_videoPlayerController != null) {
+        await _videoPlayerController!.dispose();
+        _videoPlayerController = null;
+      }
+      rethrow;
     }
   }
 
@@ -301,6 +329,10 @@ class Trimmer {
 
   /// Clean up
   void dispose() {
+    if (_videoPlayerController != null) {
+      _videoPlayerController!.dispose();
+      _videoPlayerController = null;
+    }
     _controller.close();
   }
 }

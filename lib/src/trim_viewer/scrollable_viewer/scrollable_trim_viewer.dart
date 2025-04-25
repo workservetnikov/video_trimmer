@@ -5,12 +5,12 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:video_player/video_player.dart';
-import 'package:video_trimmer/src/trim_viewer/trim_editor_painter.dart';
 import 'package:video_trimmer/src/trim_viewer/trim_area_properties.dart';
+import 'package:video_trimmer/src/trim_viewer/trim_editor_painter.dart';
 import 'package:video_trimmer/src/trim_viewer/trim_editor_properties.dart';
 import 'package:video_trimmer/src/trimmer.dart';
 import 'package:video_trimmer/src/utils/duration_style.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../utils/editor_drag_type.dart';
 import 'scrollable_thumbnail_viewer.dart';
@@ -561,16 +561,10 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
 
   @override
   void dispose() {
-    videoPlayerController.pause();
-    _scrollController.dispose();
     _scrollStartTimer?.cancel();
     _scrollingTimer?.cancel();
-    widget.onChangePlaybackState!(false);
-    if (_videoFile != null) {
-      videoPlayerController.setVolume(0.0);
-      videoPlayerController.dispose();
-      widget.onChangePlaybackState!(false);
-    }
+    _animationController?.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -704,7 +698,7 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
                 child: Row(
                   children: [
                     Container(
-                      color: Colors.red.withValues(alpha: 0.6),
+                      color: Colors.red.withOpacity(0.6),
                       height: _thumbnailViewerH,
                       // 2% of total trimmer width
                       width: (_thumbnailViewerW == 0.0
@@ -714,7 +708,7 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
                     ),
                     const Spacer(),
                     Container(
-                      color: Colors.red.withValues(alpha: 0.6),
+                      color: Colors.red.withOpacity(0.6),
                       height: _thumbnailViewerH,
                       // 2% of total trimmer width
                       width: (_thumbnailViewerW == 0.0
