@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 
 /// Formats a [Duration] object to a human-readable string.
 ///
