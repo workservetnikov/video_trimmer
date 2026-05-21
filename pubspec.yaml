@@ -11,12 +11,12 @@ dependencies:
     sdk: flutter
 
   video_player: ^2.9.3
-  ffmpeg_kit_flutter_full_gpl:
+  ffmpeg_kit_flutter_new:
     git:
-      url: https://github.com/workservetnikov/ffmpeg_kit_flutter_full_gpl.git
-      ref: update-flutter
+      url: https://github.com/maickonn/ffmpeg_kit_flutter.git
+      ref: fix/ios-simulator-arm64
   path_provider: ^2.1.1
-  intl: 0.19.0
+  intl: 0.20.2
   path: ^1.9.1
   transparent_image: ^2.0.1
 
